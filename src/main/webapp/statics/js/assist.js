@@ -234,7 +234,7 @@
 						var $delSpan = $(e).find('span[class="fa-span"][data-del-selected="true"]');
 						if ($delSpan.length) {
 							settings.delCallback(row);
-							$edtSpan.attr('data-del-selected', false);
+							$delSpan.attr('data-del-selected', false);
 						}
 					}
 					settings.click(row, e);
@@ -276,9 +276,9 @@
 			var $this = $(this);
 			var today = new Date().format('yyyy-MM-dd');
 			// 选择的开始时间将赋值到 #stime
-			$this.before('<input type="hidden" id="stime" value="' + today + ' 00:00:00">');
+			$this.before('<input type="hidden" id="stime" value="' + today + ' 00:00:00" name="stime">');
 			// 选择的结束时间将赋值到 #etime
-			$this.before('<input type="hidden" id="etime" value="' + today + ' 23:59:59">');
+			$this.before('<input type="hidden" id="etime" value="' + today + ' 23:59:59" name="etime">');
 			date_language_locale.format = "YYYY-MM-DD HH:mm:ss";
 			$this.daterangepicker({
 				timePicker : settings.timePicker,
@@ -302,9 +302,9 @@
 			var $this = $(this);
 			var today = new Date().format('yyyy-MM-dd');
 			// 选择的开始时间将赋值到 #sdate
-			$this.before('<input type="hidden" id="sdate" value="' + today + '">');
+			$this.before('<input type="hidden" id="sdate" value="' + today + '" name="sdate">');
 			// 选择的结束时间将赋值到 #edate
-			$this.before('<input type="hidden" id="edate" value="' + today + '">');
+			$this.before('<input type="hidden" id="edate" value="' + today + '" name="edate">');
 			date_language_locale.format = "YYYY-MM-DD";
 			$this.daterangepicker({
 				dateLimit : settings.dateLimit,
