@@ -41,6 +41,89 @@
 				}
 			});
 		},
+		// 模态框
+		dialog : function(options) {
+			var defaults = {
+				title : '未命名标题',	// 标题
+				content : '',		// 内容, 可以是 JQuery 选择器或 HTML 内容, 默认已经使用 form 表单包裹了内容区域, 可以通过 dialog.form 获取此表单对象
+				buttons : [			// 按钮, type 默认为 'button' 类型
+				    {
+				    	type : 'button',
+				    	clas : 'btn-default', // btn-default, btn-primary, btn-success, btn-info, btn-danger, btn-warning
+				    	name : '关闭退出',
+				    	exit : true,
+				    	click : undefined,
+				    }
+				],
+			};
+			var settings = $.extend({}, defaults, options);
+			var dialog_seq = $('.modal').length + 1;
+			var modal_dialog_id = 'modal-dialog-' + dialog_seq;
+			var _modal_dialog_id = '#' + modal_dialog_id;
+			if (!$(_modal_dialog_id).length) {
+				$('body').append('<div class="modal" data-backdrop="static" id="' + modal_dialog_id + '">' + 
+						'<div class="modal-dialog">' + 
+						'<div class="modal-content">' + 
+							'<div class="modal-header">' + 
+								'<button type="button" class="close" data-dismiss="modal" aria-label="Close">' + 
+									'<span aria-hidden="true">&times;</span>' + 
+								'</button>' + 
+								'<h4 class="modal-title"></h4>' + 
+							'</div>' + 
+							'<form role="form" id="' + modal_dialog_id + '-form">' + 
+								'<div class="modal-body"></div>' + 
+								'<div class="modal-footer text-center"></div>' + 
+							'</form>' + 
+						'</div>' + 
+					'</div>' + 
+				'</div>');
+			}
+			$(_modal_dialog_id + ' .modal-title').html(settings.title);
+			if ($(settings.content).length === 1) {
+				$(settings.content).clone(true).css('display', 'block').prependTo(_modal_dialog_id + ' .modal-body');
+				$(settings.content).remove();
+			}
+			else {
+				$(_modal_dialog_id + ' .modal-body').html(settings.content);
+			}
+			for (var i in settings.buttons) {
+				var button = settings.buttons[i];
+				if (!button.type) {
+					button.type = 'button';
+				}
+				if (!button.clas) {
+					button.clas = 'btn btn-default btn-flat';
+				}
+				else {
+					button.clas += 'btn btn-flat';
+				}
+				if (!button.name) {
+					button.name = '按钮';
+				}
+				if (!button.exit) {
+					button.exit = false;
+				}
+				var btnHtml = '<button type="' + button.type + '" class="' + button.clas + '" ';
+				var btnHtmlId = undefined;
+				if (button.exit) {
+					btnHtml += 'data-dismiss="modal"';
+				}
+				else if (button.click) {
+					btnHtmlId = modal_dialog_id + '-btn-' + i;
+					btnHtml += 'id="' + btnHtmlId + '"';
+				}
+				btnHtml += '>' + button.name + '</button>';
+				$(_modal_dialog_id + ' .modal-footer').append(btnHtml);
+				if (button.click && btnHtmlId) {
+					$('#' + btnHtmlId).click(function(e){
+						var this_id = $(this).prop('id');
+						var btn_index = parseInt(this_id.substring(this_id.length - 1));
+						settings.buttons[btn_index].click(e);
+					});
+				}
+			}
+			return new Dialog(_modal_dialog_id);
+		},
 		// 提示信息, info
 		info : function(message) {
 			toastr.info(message);
@@ -56,7 +139,7 @@
 		// 提示信息, error
 		error : function(message) {
 			toastr.error(message);
-		}
+		},
 	});
 	$.fn.extend({
 		// bootstrapValidator 表单校验
@@ -85,16 +168,12 @@
 			var $modal = $form.parents('div.modal');
 			if ($modal.length) {
 				$modal.on('hide.bs.modal', function() {
-					$('form').each(function(i) {
-						$(this)[0].reset();
-					});
-					$('form').bootstrapValidator('resetForm');
+					$form[0].reset();
+					$form.bootstrapValidator('resetForm');
 				});
 				$modal.on('hidden.bs.modal', function() {
-					$('form').each(function(i) {
-						$(this)[0].reset();
-					});
-					$('form').bootstrapValidator('resetForm');
+					$form[0].reset();
+					$form.bootstrapValidator('resetForm');
 				});
 			}
 		},
@@ -269,23 +348,27 @@
 				timePicker : true, 					// 显示时间
 				timePicker24Hour : true, 			// 24小时制
 				timePickerSeconds : true, 			// 显示秒
-				dateLimit : { "days": 90 }, 		// 选择的两个日期最大不允许超过的值
+				dateLimit : { "days": 366 }, 		// 选择的两个日期最大不允许超过的值
 				change : function(stime, etime) {},	// 时间改变时的回调通知
 			};
 			var settings = $.extend({}, defaults, options);
 			var $this = $(this);
 			var today = new Date().format('yyyy-MM-dd');
+			var firstDayOfYear = today.substring(0, 4) + '-01-01 00:00:00';
+			today += ' 23:59:59';
 			// 选择的开始时间将赋值到 #stime
-			$this.before('<input type="hidden" id="stime" value="' + today + ' 00:00:00" name="stime">');
+			$this.before('<input type="hidden" id="stime" value="' + firstDayOfYear + '" name="stime">');
 			// 选择的结束时间将赋值到 #etime
-			$this.before('<input type="hidden" id="etime" value="' + today + ' 23:59:59" name="etime">');
+			$this.before('<input type="hidden" id="etime" value="' + today + '" name="etime">');
 			date_language_locale.format = "YYYY-MM-DD HH:mm:ss";
 			$this.daterangepicker({
 				timePicker : settings.timePicker,
 				timePicker24Hour : settings.timePicker24Hour,
 				timePickerSeconds : settings.timePickerSeconds,
 				dateLimit : settings.dateLimit,
-				locale : date_language_locale
+				locale : date_language_locale,
+				startDate : firstDayOfYear,
+				endDate : today
 			}, function(start, end, label) {
 				$('#etime').val(end.format('YYYY-MM-DD HH:mm:ss'));
 				$('#stime').val(start.format('YYYY-MM-DD HH:mm:ss'));
@@ -295,20 +378,23 @@
 		// 日期范围
 		daterange : function(options) {
 			var defaults = {
-				dateLimit : { "days": 90 }, 		// 选择的两个日期最大不允许超过的值
+				dateLimit : { "days": 366 }, 		// 选择的两个日期最大不允许超过的值
 				change : function(stime, etime) {},	// 时间改变时的回调通知
 			};
 			var settings = $.extend({}, defaults, options);
 			var $this = $(this);
 			var today = new Date().format('yyyy-MM-dd');
+			var firstDayOfYear = today.substring(0, 4) + '-01-01';
 			// 选择的开始时间将赋值到 #sdate
-			$this.before('<input type="hidden" id="sdate" value="' + today + '" name="sdate">');
+			$this.before('<input type="hidden" id="sdate" value="' + firstDayOfYear + '" name="sdate">');
 			// 选择的结束时间将赋值到 #edate
 			$this.before('<input type="hidden" id="edate" value="' + today + '" name="edate">');
 			date_language_locale.format = "YYYY-MM-DD";
 			$this.daterangepicker({
 				dateLimit : settings.dateLimit,
-				locale : date_language_locale
+				locale : date_language_locale,
+				startDate : firstDayOfYear,
+				endDate : today
 			}, function(start, end, label) {
 				$('#edate').val(end.format('YYYY-MM-DD'));
 				$('#sdate').val(start.format('YYYY-MM-DD'));
@@ -369,6 +455,21 @@ function DataTable(e) {
 	// 获取选中的行对象(单选行, 多选则返回第一个选中的行)
 	this.getSelected = function() {
 		return $(this.self).bootstrapTable('getSelections')[0];
+	};
+}
+// 模态框对象
+function Dialog(mdl) {
+	// 自身引用
+	this.self = $(mdl);
+	// form 表单对象
+	this.form = $(mdl + '-form');
+	// 隐藏
+	this.hide = function() {
+		this.self.modal('hide');
+	};
+	// 显示
+	this.show = function() {
+		this.self.modal('show');
 	};
 }
 // 控制台错误日志
