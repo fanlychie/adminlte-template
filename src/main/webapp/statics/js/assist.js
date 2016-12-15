@@ -340,6 +340,10 @@
 					$('span.fasearch').parents('div.bootstrap-table').find('table.table').bootstrapTable('refresh');
 				});
 			} catch (e) {}
+			// 单选按钮, 多选按钮, 下拉框, 值改变时自动刷新数据表格
+			$('#toolbar input[type="radio"],#toolbar input[type="checkbox"],#toolbar select').change(function() {
+				$(this).parents('div.bootstrap-table').find('table.table').bootstrapTable('refresh');
+			});
 			return new DataTable(this);
 		},
 		// 日期时间范围
