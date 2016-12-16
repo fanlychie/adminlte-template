@@ -281,20 +281,28 @@
 				queryParamsType : settings.queryParamsType,
 				queryParams : function(params) {
 					$('#toolbar input[type!="radio"][type!="checkbox"],#toolbar textarea,#toolbar select,#toolbar input:radio:checked').each(function(i) {
-						$this = $(this);
-						if ($this.prop('name')) {
-							params['params["' + $this.prop('name') + '"]'] = $this.val();
+						var $this = $(this);
+						var this_name = $this.prop('name');
+						if (this_name) {
+							params['params["' + this_name + '"]'] = $this.val();
+							if ($this.prop('type') === 'text') {
+								if (!$('#toolbar-text-input').length) {
+									$('#toolbar').append('<span id="toolbar-text-input"></span>');
+								}
+								$('#toolbar-text-input').attr('data-' + this_name, $this.val());
+							}
 						}
 					});
 					$('#toolbar input[type="checkbox"]:checked').each(function(i) {
-						$this = $(this);
-						if ($this.prop('name')) {
-							var val = params['params["' + $this.prop('name') + '"]'];
+						var $this = $(this);
+						var this_name = $this.prop('name');
+						if (this_name) {
+							var val = params['params["' + this_name + '"]'];
 							if (val) {
-								params['params["' + $this.prop('name') + '"]'] = val + ',' + $this.val();
+								params['params["' + this_name + '"]'] = val + ',' + $this.val();
 							}
 							else {
-								params['params["' + $this.prop('name') + '"]'] = $this.val();
+								params['params["' + this_name + '"]'] = $this.val();
 							}
 						}
 					});
@@ -343,6 +351,18 @@
 			// 单选按钮, 多选按钮, 下拉框, 值改变时自动刷新数据表格
 			$('#toolbar input[type="radio"],#toolbar input[type="checkbox"],#toolbar select').change(function() {
 				$(this).parents('div.bootstrap-table').find('table.table').bootstrapTable('refresh');
+			});
+			// 文本框按键弹起时延迟刷新表格
+			$('#toolbar input[type="text"]').keyup(function() {
+				var $this = $(this);
+				var odval = $('#toolbar-text-input').attr('data-' + $this.prop('name'));
+				if (odval != undefined && odval != $this.val()) {
+					$('#toolbar-text-input').attr('data-' + $this.prop('name'), $this.val())
+					$table = $this.parents('div.bootstrap-table').find('table.table');
+					setTimeout(function() {
+						$table.bootstrapTable('refresh');
+					}, 600);
+				}
 			});
 			return new DataTable(this);
 		},
