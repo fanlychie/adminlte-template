@@ -350,7 +350,9 @@
 			} catch (e) {}
 			// 单选按钮, 多选按钮, 下拉框, 值改变时自动刷新数据表格
 			$('#toolbar input[type="radio"],#toolbar input[type="checkbox"],#toolbar select').change(function() {
-				$(this).parents('div.bootstrap-table').find('table.table').bootstrapTable('refresh');
+				var $table = $(this).parents('div.bootstrap-table').find('table.table');
+				$table.bootstrapTable('refreshOptions', {pageNumber : 1});
+				$table.bootstrapTable('refresh');
 			});
 			// 文本框按键弹起时延迟刷新表格
 			$('#toolbar input[type="text"]').keyup(function() {
@@ -359,7 +361,9 @@
 					var odval = $('#toolbar-text-input').attr('data-' + $this.prop('name'));
 					if (odval != undefined && odval != $this.val()) {
 						$('#toolbar-text-input').attr('data-' + $this.prop('name'), $this.val());
-						$this.parents('div.bootstrap-table').find('table.table').bootstrapTable('refresh');
+						var $table = $this.parents('div.bootstrap-table').find('table.table');
+						$table.bootstrapTable('refreshOptions', {pageNumber : 1});
+						$table.bootstrapTable('refresh');
 					}
 				}, 1000);
 			});
@@ -473,6 +477,7 @@ function DataTable(e) {
 	this.self = e;
 	// 刷新
 	this.refresh = function() {
+		$(this.self).bootstrapTable('refreshOptions', {pageNumber : 1});
 		$(this.self).bootstrapTable('refresh');
 	};
 	// 获取选中的行对象(单选行, 多选则返回第一个选中的行)
