@@ -355,14 +355,13 @@
 			// 文本框按键弹起时延迟刷新表格
 			$('#toolbar input[type="text"]').keyup(function() {
 				var $this = $(this);
-				var odval = $('#toolbar-text-input').attr('data-' + $this.prop('name'));
-				if (odval != undefined && odval != $this.val()) {
-					$('#toolbar-text-input').attr('data-' + $this.prop('name'), $this.val())
-					$table = $this.parents('div.bootstrap-table').find('table.table');
-					setTimeout(function() {
-						$table.bootstrapTable('refresh');
-					}, 600);
-				}
+				setTimeout(function() {
+					var odval = $('#toolbar-text-input').attr('data-' + $this.prop('name'));
+					if (odval != undefined && odval != $this.val()) {
+						$('#toolbar-text-input').attr('data-' + $this.prop('name'), $this.val());
+						$this.parents('div.bootstrap-table').find('table.table').bootstrapTable('refresh');
+					}
+				}, 1000);
 			});
 			return new DataTable(this);
 		},
