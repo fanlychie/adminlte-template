@@ -330,16 +330,16 @@
 					settings.doubleClick(row, e)
 				}
 			});
-			var btnHtml = settings.toolbarBtn;
-			if (btnHtml) {
+			var btns = settings.toolbarBtn;
+			if (btns) {
 				var $toolbar = $('div.bootstrap-table div.fixed-table-toolbar div.columns.columns-right.btn-group.pull-right');
-				if (toString.apply(btnHtml) === '[object Array]') {
-					for (var i in btnHtml) {
-						$toolbar.prepend(btnHtml[btnHtml.length - i - 1]);
+				if (btns instanceof Array) {
+					for (var i in btns) {
+						$toolbar.prepend(btns[btns.length - i - 1]);
 					}
 				}
 				else {
-					$toolbar.prepend(btnHtml);
+					$toolbar.prepend(btns);
 				}
 			}
 			$('div.search input.form-control').prop('placeholder', settings.searchPlaceholder);
@@ -350,9 +350,7 @@
 			} catch (e) {}
 			// 单选按钮, 多选按钮, 下拉框, 值改变时自动刷新数据表格
 			$('#toolbar input[type="radio"],#toolbar input[type="checkbox"],#toolbar select').change(function() {
-				var $table = $(this).parents('div.bootstrap-table').find('table.table');
-				$table.bootstrapTable('refreshOptions', {pageNumber : 1});
-				$table.bootstrapTable('refresh');
+                refreshDataTable($(this).parents('div.bootstrap-table').find('table.table'));
 			});
 			// 文本框按键弹起时延迟刷新表格
 			$('#toolbar input[type="text"]').keyup(function() {
@@ -361,9 +359,7 @@
 					var odval = $('#toolbar-text-input').attr('data-' + $this.prop('name'));
 					if (odval != undefined && odval != $this.val()) {
 						$('#toolbar-text-input').attr('data-' + $this.prop('name'), $this.val());
-						var $table = $this.parents('div.bootstrap-table').find('table.table');
-						$table.bootstrapTable('refreshOptions', {pageNumber : 1});
-						$table.bootstrapTable('refresh');
+                        refreshDataTable($this.parents('div.bootstrap-table').find('table.table'));
 					}
 				}, 1000);
 			});
@@ -474,15 +470,14 @@ loading = {
 // 数据表格对象
 function DataTable(e) {
 	// 自身引用
-	this.self = e;
+	this.self = $(e);
 	// 刷新
 	this.refresh = function() {
-		$(this.self).bootstrapTable('refreshOptions', {pageNumber : 1});
-		$(this.self).bootstrapTable('refresh');
+        refreshDataTable(this.self);
 	};
 	// 获取选中的行对象(单选行, 多选则返回第一个选中的行)
 	this.getSelected = function() {
-		return $(this.self).bootstrapTable('getSelections')[0];
+		return this.self.bootstrapTable('getSelections')[0];
 	};
 }
 // 模态框对象
@@ -525,6 +520,13 @@ function logConsoleError(XMLHttpRequest, textStatus, _this) {
 	console.log('url : ' + _this.url);
 	console.log('params : ' + _this.data);
 	console.log('-----------------------------------------------------------------------------------------');
+}
+// 刷新数据表格
+function refreshDataTable(datatable) {
+    var toolbar_btns = $('div.bootstrap-table div.fixed-table-toolbar div.columns.columns-right.btn-group.pull-right button').clone(true);
+    datatable.bootstrapTable('refreshOptions', {pageNumber : 1});
+    datatable.bootstrapTable('refresh');
+    $('div.bootstrap-table div.fixed-table-toolbar div.columns.columns-right.btn-group.pull-right').html(toolbar_btns);
 }
 // 点击操作按钮
 function optBtnClick(e) {
