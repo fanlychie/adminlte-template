@@ -21,7 +21,6 @@
 					<td>
 						<div class="input-group">
 							<span class="input-group-addon">电子邮箱</span> <input type="text" class="form-control" name="email">
-							<span class="input-group-addon fasearch"><i class="fa fa-search"></i></span>
 						</div>
 					</td>
 				</tr>
@@ -32,7 +31,7 @@
 		var table = $('#data-table').datatable({
 			idField : 'id',
 			url : '/data/list',
-			searchPlaceholder : '输入姓名搜索',
+			search : false,
 			toolbarBtn : [
 				'<button type="button" class="btn btn-default btn-flat"><i class="fa fa-plus"></i></button>',
 				'<button type="button" class="btn btn-default btn-flat"><i class="fa fa-pencil"></i></button>',
