@@ -1,12 +1,12 @@
 package org.fanlychie.controller;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/data")
@@ -31,33 +31,15 @@ public class DataController {
 		int counts = pagination.getLimit();
 		// 检索结果
 		List<Person> rows = new ArrayList<>();
-		// 检索关键字
-		String keyword = pagination.getSearch();
-		if (keyword != null && keyword.length() > 0) {
-			for (int i = startIndex; i < maxIndex; i++) {
-				if (STORAGE.get(i).getName().contains(keyword)) {
-					rows.add(STORAGE.get(i));
-				}
-				if (rows.size() > counts) {
-					break ;
-				}
+		// toolbar 检索参数
+		// Map<String, String> params = pagination.getParams();
+		for (int i = startIndex; i < maxIndex; i++) {
+			rows.add(STORAGE.get(i));
+			if (rows.size() > counts) {
+				break ;
 			}
-			int total = 0;
-			for (int i = 0; i < maxIndex; i++) {
-				if (STORAGE.get(i).getName().contains(keyword)) {
-					++total;
-				}
-			}
-			pagination.setTotal(total);
-		} else {
-			for (int i = startIndex; i < maxIndex; i++) {
-				rows.add(STORAGE.get(i));
-				if (rows.size() > counts) {
-					break ;
-				}
-			}
-			pagination.setTotal(STORAGE.size());
 		}
+		pagination.setTotal(STORAGE.size());
 		pagination.setRows(rows);
 		return pagination;
 	}
@@ -146,7 +128,7 @@ public class DataController {
 		private String search;
 		
 		// 检索参数
-		private Map<String, Object> params;
+		private Map<String, String> params;
 
 		public long getTotal() {
 			return total;
@@ -204,11 +186,11 @@ public class DataController {
 			this.search = search;
 		}
 
-		public Map<String, Object> getParams() {
+		public Map<String, String> getParams() {
 			return params;
 		}
 
-		public void setParams(Map<String, Object> params) {
+		public void setParams(Map<String, String> params) {
 			this.params = params;
 		}
 
