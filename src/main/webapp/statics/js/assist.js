@@ -494,6 +494,27 @@ function Dialog(mdl) {
 	this.show = function() {
 		this.self.modal('show');
 	};
+	// 设置标题
+	this.setTitle = function (title) {
+		this.self.find('.modal-title').text(title);
+    };
+    // 加载动态内容
+    this.load = function (url) {
+    	var $this = this;
+        var $modal_body = this.self.find('.modal-body');
+		$.get(url, function (data) {
+            $modal_body.html(data);
+            $this.show();
+        });
+    };
+    // 查找
+    this.find = function (dom, name) {
+		var selector = dom;
+        if (name) {
+            selector += '[name="' + name + '"]';
+        }
+        return this.form.find(selector);
+    };
 }
 // 控制台错误日志
 function logConsoleError(XMLHttpRequest, textStatus, _this) {
@@ -523,10 +544,12 @@ function logConsoleError(XMLHttpRequest, textStatus, _this) {
 }
 // 刷新数据表格
 function refreshDataTable(datatable) {
+    var placeholder = $('div.search input.form-control').prop('placeholder');
     var toolbar_btns = $('div.bootstrap-table div.fixed-table-toolbar div.columns.columns-right.btn-group.pull-right button').clone(true);
     datatable.bootstrapTable('refreshOptions', {pageNumber : 1});
     datatable.bootstrapTable('refresh');
     $('div.bootstrap-table div.fixed-table-toolbar div.columns.columns-right.btn-group.pull-right').html(toolbar_btns);
+    $('div.search input.form-control').prop('placeholder', placeholder);
 }
 // 点击操作按钮
 function optBtnClick(e) {
