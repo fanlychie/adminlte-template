@@ -37,6 +37,9 @@
 						<a href="/pages/table.jsp"><i class="fa fa-circle-o"></i> Table</a>
 					</li>
 					<li>
+						<a href="/pages/fileUpload.jsp"><i class="fa fa-circle-o"></i> FileUpload</a>
+					</li>
+					<li>
 						<a href="/pages/login.jsp" target="_blank"><i class="fa fa-circle-o"></i> Login</a>
 					</li>
 				</ul>
