@@ -427,7 +427,79 @@
 		// 日期
 		date : function() {
 			$(this).datepicker({ language : 'zh-CN', format : 'yyyy-mm-dd', autoclose: true });
-		}
+		},
+		fileupload : function (options) {
+            var defaults = {
+                showCaption: true,  // 是否显示文件选择的输入框
+                showPreview: true,  // 是否显示文件预览
+                showRemove: true,   // 是否显示删除全部的按钮
+                showUpload: true,   // 是否显示全部上传的按钮
+                showCancel: true,   // 是否显示取消上传的按钮
+                showClose: false,   // 是否显示关闭预览的按钮
+				showErrmsg: false,  // 是否显示上传失败的信息
+                language: 'zh',  // 语言
+                url: '',         // 上传路径
+                allowedFileExtensions : ['jpg', 'png','gif'],  // 允许上传的文件扩展名, eg: ['jpg', 'png','gif']
+                overwriteInitial: false,  // 不覆盖已存在的
+                minFileSize: 0,           // 文件最小大小, 单位 KB, 0 表示不限制, eg: 0
+                maxFileSize: 2 * 1024,    // 文件最大大小, 单位 KB, 0 表示不限制, eg: 2 * 1024
+                minFileCount: 0,    // 上传最小文件数, 0 表示不限制
+                maxFileCount: 10,   // 上传最大文件数, 0 表示不限制
+                uploadAsync: true,  // 是否异步上传
+                removeIcon: '<i class="fa fa-trash"></i>',    // 删除图标
+                uploadIcon: '<i class="fa fa-upload"></i>',   // 上传图标
+                browseIcon: '<i class="fa fa-folder-open"></i>&nbsp;',  // 选择文件图标
+                cancelIcon: '<i class="fa fa-ban"></i>',  // 取消图标
+                msgValidationErrorIcon: '<i class="fa fa-exclamation-triangle"></i> ', // 上传错误图标
+                fileActionSettings : {  // 文件预览动作设置项
+                    showZoom: false,    // 是否显示预览原图按钮
+                    removeClass: 'btn btn-xs btn-default clean-default',   // 删除图标的 class
+                    uploadClass: 'btn btn-xs btn-default clean-default',   // 删除图标的 class
+                    uploadIcon: '<i class="glyphicon glyphicon-open text-info"></i>',        // 上传图标
+                    indicatorNew: '<i class="glyphicon glyphicon-send text-warning"></i>',   // 未上传的图标
+                    indicatorSuccess: '<i class="glyphicon glyphicon-ok text-success"></i>', // 已上传的图标
+                },
+                msgErrorClass: 'file-error-message', // 文件上传失败信息的 class
+                success : function (result) {},   // 上传成功后的回调函数,
+				remove : function (event, id) {}, // 上传成功后删除的回调函数,
+				error : function (data, msg) {},  // 上传失败的回调函数
+            };
+            var settings = $.extend({}, defaults, options);
+            if (!settings.showErrmsg) {
+                settings.msgErrorClass = 'file-error-message hidden-block';
+            }
+            $("#uploadfile").fileinput({
+                showCaption: settings.showCaption,
+                showBrowse: settings.showBrowse,
+                showPreview: settings.showPreview,
+                showRemove: settings.showRemove,
+                showUpload: settings.showUpload,
+                showCancel: settings.showCancel,
+                showClose: settings.showClose,
+                language: settings.language,
+                uploadUrl: settings.url,
+                allowedFileExtensions : settings.allowedFileExtensions,
+                overwriteInitial: settings.overwriteInitial,
+                minFileSize: settings.minFileSize,
+                maxFileSize: settings.maxFileSize,
+                minFileCount: settings.minFileCount,
+                maxFileCount: settings.maxFileCount,
+                uploadAsync: settings.uploadAsync,
+                removeIcon: settings.removeIcon,
+                uploadIcon: settings.uploadIcon,
+                browseIcon: settings.browseIcon,
+                cancelIcon: settings.cancelIcon,
+                fileActionSettings : settings.fileActionSettings,
+                msgErrorClass: settings.msgErrorClass,
+            }).on("fileuploaded", function (event, data, previewId, index) {
+                settings.success(data.response);
+            }).on('filesuccessremove', function(event, id) {
+                settings.remove(event, id);
+            }).on('fileuploaderror', function(event, data, msg) {
+                $('.hidden-block').css('display', 'none');
+                settings.error(data.response, msg);
+            });;
+        }
 	});
 })(jQuery);
 // 扩展  Date 支持 format

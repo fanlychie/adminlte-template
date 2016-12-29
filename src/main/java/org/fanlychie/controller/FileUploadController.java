@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +17,7 @@ import java.util.Map;
 public class FileUploadController {
 
     @RequestMapping
-    public @ResponseBody Map<String, Object> upload(@RequestParam("files") MultipartFile[] files, HttpServletResponse response) {
+    public @ResponseBody Map<String, Object> upload(@RequestParam("files") MultipartFile[] files) {
         System.out.println(files[0].getOriginalFilename());
         Map<String, Object> map = new HashMap<>();
         map.put("success", true);
