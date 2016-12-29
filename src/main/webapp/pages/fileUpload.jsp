@@ -4,7 +4,7 @@
 	<script src="/statics/plugins/adminLTE/plugins/bootstrap-fileinput/js/fileinput.js"></script>
 	<script src="/statics/plugins/adminLTE/plugins/bootstrap-fileinput/js/locales/zh.js"></script>
 	<div class="col-md-6">
-		<input id="uploadfile" name="files" type="file" multiple class="file-loading">
+        <input id="uploadfile" name="files">
 	</div>
 	<script type="text/javascript">
         $("#uploadfile").fileupload({

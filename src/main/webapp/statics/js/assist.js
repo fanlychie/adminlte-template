@@ -468,7 +468,11 @@
             if (!settings.showErrmsg) {
                 settings.msgErrorClass = 'file-error-message hidden-block';
             }
-            $("#uploadfile").fileinput({
+            var $this = $(this);
+            $this.prop('type', 'file');
+            $this.prop('multiple', true);
+            $this.addClass('file-loading');
+            $this.fileinput({
                 showCaption: settings.showCaption,
                 showBrowse: settings.showBrowse,
                 showPreview: settings.showPreview,
