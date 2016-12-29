@@ -9,6 +9,12 @@
 				</a>
 				<ul class="treeview-menu">
 					<li>
+						<a href="/pages/column.jsp"><i class="fa fa-circle-o"></i> Column</a>
+					</li>
+					<li>
+						<a href="/pages/row.jsp"><i class="fa fa-circle-o"></i> Row</a>
+					</li>
+					<li>
 						<a href="/pages/tab.jsp"><i class="fa fa-circle-o"></i> Tab</a>
 					</li>
 					<li>
