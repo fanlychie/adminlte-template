@@ -474,6 +474,33 @@
             var fupload = new FileUpload($this, settings);
             fupload.create();
             return fupload;
+        },
+		// 富文本编辑器
+		editor : function (options) {
+            var defaults = {
+                height: 300,   // 高度
+                width: null,    // 宽度
+                lang: 'zh-CN',  // 语言
+                toolbar: [      // 工具栏
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
+                    ['fontname', ['fontname']],
+                    ['fontsize', ['fontsize']],
+                    ['para', ['ul', 'ol', 'paragraph', 'height']],
+                    ['insert', ['table', 'link', 'picture', 'video', 'hr']],
+                    ['view', ['fullscreen']],
+                ],
+                styleTags: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote'],        // 样式
+                fontSizes: ['12', '14', '16', '18', '20', '22', '24', '26', '28', '30'],   // 字体大小
+                fontNames: ['Arial', 'Tahoma', 'Verdana', 'Helvetica', 'Courier New', 'Times New Roman', '宋体', '新宋体', '楷体', '微软雅黑'],   // 字体
+                placeholder: '',     // placeholder
+            };
+            var settings = $.extend({}, defaults, options);
+            var $this = $(this);
+            $this.addClass('summernote');
+            $this.summernote(settings);
+            $('.note-editor button.dropdown-toggle').dropdownHover().dropdown();
+            return new Editor($this);
         }
 	});
 })(jQuery);
@@ -571,6 +598,43 @@ function FileUpload(e, settings) {
         }).on('fileuploaderror', function(event, data, msg) {
             opts.error(data.response, msg);
         });
+    };
+}
+// 富文本编辑器
+function Editor(e) {
+	// 自身引用
+	this.self = e;
+	// 插入内容
+	this.insert = function (text) {
+		this.self.summernote('insertText', text);
+    };
+	// 聚焦
+	this.focus = function () {
+		this.self.summernote('focus');
+    };
+	// 判断内容是否为空
+	this.isEmpty = function () {
+		return this.self.summernote('isEmpty');
+    }
+    // 重置
+    this.reset = function () {
+        this.self.summernote('reset');
+    };
+	// 禁用
+	this.disable = function () {
+        this.self.summernote('disable');
+    };
+    // 启用
+	this.enable = function () {
+        this.self.summernote('enable');
+    };
+	// 设置字体
+	this.setFontName = function (fontName) {
+		this.self.summernote('fontName', fontName);
+    };
+	// 获取编辑器的内容
+	this.val = function () {
+        return this.self.val();
     };
 }
 // 扩展  Date 支持 format
