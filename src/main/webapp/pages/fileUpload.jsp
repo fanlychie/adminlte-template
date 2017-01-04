@@ -7,14 +7,11 @@
         <input id="uploadfile" name="files">
 	</div>
 	<script type="text/javascript">
-        $("#uploadfile").fileupload({
+        var fileUpload = $("#uploadfile").fileupload({
+            maxFileCount: 2,
             url : ctx + '/fileupload',
             success : function (result) {
                 console.log(result);
-            },
-            error : function (result, msg) {
-                console.log(result);
-                console.log(msg);
             }
         });
 	</script>

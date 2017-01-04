@@ -428,6 +428,7 @@
 		date : function() {
 			$(this).datepicker({ language : 'zh-CN', format : 'yyyy-mm-dd', autoclose: true });
 		},
+		// 文件上传
 		fileupload : function (options) {
             var defaults = {
                 showCaption: true,  // 是否显示文件选择的输入框
@@ -436,11 +437,14 @@
                 showUpload: true,   // 是否显示全部上传的按钮
                 showCancel: true,   // 是否显示取消上传的按钮
                 showClose: false,   // 是否显示关闭预览的按钮
-				showErrmsg: false,  // 是否显示上传失败的信息
-                language: 'zh',  // 语言
-                url: '',         // 上传路径
-                allowedFileExtensions : ['jpg', 'png','gif'],  // 允许上传的文件扩展名, eg: ['jpg', 'png','gif']
-                overwriteInitial: false,  // 不覆盖已存在的
+                language: 'zh',     // 语言
+                url: '',            // 上传路径
+                allowedFileExtensions : null,  // 允许上传的文件扩展名, eg: ['jpg', 'png','gif']
+                initialPreview: [],          // 初始化预览图片,
+                initialPreviewAsData: true,  // 初始化预览时自动加上 img 标签
+                initialPreviewConfig: [],    // 初始化预览配置,
+                initialCaption: '',          // 初始化文件选择框里面的文字
+                overwriteInitial: false,  // 是否覆盖已存在的
                 minFileSize: 0,           // 文件最小大小, 单位 KB, 0 表示不限制, eg: 0
                 maxFileSize: 2 * 1024,    // 文件最大大小, 单位 KB, 0 表示不限制, eg: 2 * 1024
                 minFileCount: 0,    // 上传最小文件数, 0 表示不限制
@@ -459,53 +463,116 @@
                     indicatorNew: '<i class="glyphicon glyphicon-send text-warning"></i>',   // 未上传的图标
                     indicatorSuccess: '<i class="glyphicon glyphicon-ok text-success"></i>', // 已上传的图标
                 },
-                msgErrorClass: 'file-error-message', // 文件上传失败信息的 class
-                success : function (result) {},   // 上传成功后的回调函数,
-				remove : function (event, id) {}, // 上传成功后删除的回调函数,
-				error : function (data, msg) {},  // 上传失败的回调函数
+                success : function (result) {},      // 上传成功后的回调函数,
+				remove : function (event, id) {},    // 上传成功后删除的回调函数,
+				error : function (data, msg) {},     // 上传失败的回调函数
             };
             var settings = $.extend({}, defaults, options);
-            if (!settings.showErrmsg) {
-                settings.msgErrorClass = 'file-error-message hidden-block';
-            }
             var $this = $(this);
             $this.prop('type', 'file');
             $this.prop('multiple', true);
-            $this.addClass('file-loading');
-            $this.fileinput({
-                showCaption: settings.showCaption,
-                showBrowse: settings.showBrowse,
-                showPreview: settings.showPreview,
-                showRemove: settings.showRemove,
-                showUpload: settings.showUpload,
-                showCancel: settings.showCancel,
-                showClose: settings.showClose,
-                language: settings.language,
-                uploadUrl: settings.url,
-                allowedFileExtensions : settings.allowedFileExtensions,
-                overwriteInitial: settings.overwriteInitial,
-                minFileSize: settings.minFileSize,
-                maxFileSize: settings.maxFileSize,
-                minFileCount: settings.minFileCount,
-                maxFileCount: settings.maxFileCount,
-                uploadAsync: settings.uploadAsync,
-                removeIcon: settings.removeIcon,
-                uploadIcon: settings.uploadIcon,
-                browseIcon: settings.browseIcon,
-                cancelIcon: settings.cancelIcon,
-                fileActionSettings : settings.fileActionSettings,
-                msgErrorClass: settings.msgErrorClass,
-            }).on("fileuploaded", function (event, data, previewId, index) {
-                settings.success(data.response);
-            }).on('filesuccessremove', function(event, id) {
-                settings.remove(event, id);
-            }).on('fileuploaderror', function(event, data, msg) {
-                $('.hidden-block').css('display', 'none');
-                settings.error(data.response, msg);
-            });;
+            var fupload = new FileUpload($this, settings);
+            fupload.create();
+            return fupload;
         }
 	});
 })(jQuery);
+// 文件上传
+function FileUpload(e, settings) {
+	// 自身引用
+    this.self = e;
+    // 配置
+	this.options = settings;
+	// 禁用
+	this.disable = function () {
+        if (this.self.data('fileinput')) {
+            this.self.fileinput('disable');
+        }
+    };
+	// 启用
+	this.enable = function () {
+        if (this.self.data('fileinput')) {
+            this.self.fileinput('enable');
+        }
+    };
+	// 销毁
+	this.destroy = function () {
+        if (this.self.data('fileinput')) {
+            this.self.fileinput('destroy');
+        }
+    };
+	// 重新创建
+	this.recreate = function (opts) {
+        if (this.self.data('fileinput')) {
+            this.destroy();
+        }
+        if (!opts) {
+        	opts = this.options;
+        }
+        this.create(opts);
+    };
+	// 初始化预览
+	this.preview = function (opts) {
+        if (typeof opts === 'object') {
+        	// 参数是数组
+            if (typeof opts.length === 'number') {
+                var configs = new Array();
+                $.each(opts, function (i, v) {
+                    configs.push({caption : '', size : 0, key : i + 1});
+                });
+                var o = {
+                    initialPreview : opts,
+                    initialPreviewConfig : configs,
+                    initialCaption : '已上传 ' + opts.length + ' 个文件',
+                };
+            	o = $.extend({}, this.options, o);
+                this.recreate(o);
+            } else {
+                var o = $.extend({}, this.options, opts);
+                this.recreate(o);
+            }
+        }
+    };
+	// 创建
+	this.create = function (opts) {
+        if (!opts) {
+            opts = this.options;
+        }
+        this.self.fileinput({
+            showCaption: opts.showCaption,
+            showBrowse: opts.showBrowse,
+            showPreview: opts.showPreview,
+            showRemove: opts.showRemove,
+            showUpload: opts.showUpload,
+            showCancel: opts.showCancel,
+            showClose: opts.showClose,
+            language: opts.language,
+            uploadUrl: opts.url,
+            allowedFileExtensions : opts.allowedFileExtensions,
+            initialPreview: opts.initialPreview,
+            initialPreviewAsData: opts.initialPreviewAsData,
+            initialPreviewConfig: opts.initialPreviewConfig,
+            initialCaption: opts.initialCaption,
+            overwriteInitial: opts.overwriteInitial,
+            minFileSize: opts.minFileSize,
+            maxFileSize: opts.maxFileSize,
+            minFileCount: opts.minFileCount,
+            maxFileCount: opts.maxFileCount,
+            uploadAsync: opts.uploadAsync,
+            removeIcon: opts.removeIcon,
+            uploadIcon: opts.uploadIcon,
+            browseIcon: opts.browseIcon,
+            cancelIcon: opts.cancelIcon,
+            fileActionSettings : opts.fileActionSettings,
+        }).on("fileuploaded", function (event, data, previewId, index) {
+            opts.success(data.response);
+        }).on('filesuccessremove', function(event, id) {
+            opts.remove(event, id);
+        }).on('fileuploaderror', function(event, data, msg) {
+            opts.error(data.response, msg);
+        });
+    };
+}
 // 扩展  Date 支持 format
 Date.prototype.format = function(pattern) {
 	var o = {
