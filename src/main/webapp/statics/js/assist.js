@@ -463,7 +463,7 @@
                     indicatorNew: '<i class="glyphicon glyphicon-send text-warning"></i>',   // 未上传的图标
                     indicatorSuccess: '<i class="glyphicon glyphicon-ok text-success"></i>', // 已上传的图标
                 },
-                success : function (result) {},      // 上传成功后的回调函数,
+                success : function (result, e) {},   // 上传成功后的回调函数,
 				remove : function (event, id) {},    // 上传成功后删除的回调函数,
 				error : function (data, msg) {},     // 上传失败的回调函数
             };
@@ -565,7 +565,7 @@ function FileUpload(e, settings) {
             cancelIcon: opts.cancelIcon,
             fileActionSettings : opts.fileActionSettings,
         }).on("fileuploaded", function (event, data, previewId, index) {
-            opts.success(data.response);
+            opts.success(data.response, this.self);
         }).on('filesuccessremove', function(event, id) {
             opts.remove(event, id);
         }).on('fileuploaderror', function(event, data, msg) {
