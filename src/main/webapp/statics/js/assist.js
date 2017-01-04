@@ -349,7 +349,7 @@
 				});
 			} catch (e) {}
 			// 单选按钮, 多选按钮, 下拉框, 值改变时自动刷新数据表格
-			$('#toolbar input[type="radio"],#toolbar input[type="checkbox"],#toolbar select').change(function() {
+			$('#toolbar input[type="radio"],#toolbar input[type="checkbox"],#toolbar select,#toolbar input.change-refresh-control').change(function() {
                 refreshDataTable($(this).parents('div.bootstrap-table').find('table.table'));
 			});
 			// 文本框按键弹起时延迟刷新表格

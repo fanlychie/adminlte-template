@@ -20,7 +20,7 @@
 					<label for>日期时间范围 : </label>
 					<div class="input-group">
 						<div class="input-group-addon"><i class="fa fa-clock-o"></i></div>
-						<input type="text" class="form-control pull-right" id="datetime-range">
+						<input type="text" class="form-control change-refresh-control pull-right" id="datetime-range">
 					</div>
 				</div>
 				<script type="text/javascript">
@@ -30,7 +30,7 @@
 					<label for>日期范围 : </label>
 					<div class="input-group">
 						<div class="input-group-addon"><i class="fa fa-calendar"></i></div>
-						<input type="text" class="form-control pull-right" id="date-range">
+						<input type="text" class="form-control change-refresh-control pull-right" id="date-range">
 					</div>
 				</div>
 				<script type="text/javascript">
@@ -40,7 +40,7 @@
 					<label for>日期 : </label>
 					<div class="input-group">
 						<div class="input-group-addon"><i class="fa fa-calendar"></i></div>
-						<input type="text" class="form-control pull-right" id="datepicker">
+						<input type="text" class="form-control change-refresh-control pull-right" id="datepicker">
 					</div>
 				</div>
 				<script type="text/javascript">
