@@ -37,6 +37,7 @@
 							<li><a href="/pages/form/select.jsp"><i class="fa fa-circle-o"></i> Select</a></li>
 							<li><a href="/pages/form/icheck.jsp"><i class="fa fa-circle-o"></i> Radio & Checkbox</a></li>
 							<li><a href="/pages/form/validator.jsp"><i class="fa fa-circle-o"></i> Validator</a></li>
+							<li><a href="/pages/form/editor.jsp"><i class="fa fa-circle-o"></i> Editor</a></li>
 						</ul>
 					</li>
 					<li>
