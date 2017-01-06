@@ -44,9 +44,11 @@
 		// 模态框
 		dialog : function(options) {
 			var defaults = {
-				title : '未命名标题',	// 标题
-				content : '',		// 内容, 可以是 JQuery 选择器或 HTML 内容, 默认已经使用 form 表单包裹了内容区域, 可以通过 dialog.form 获取此表单对象
-				buttons : [			// 按钮, type 默认为 'button' 类型
+				title : '未命名标题', // 标题
+                width : null,        // 宽度
+                height : null,       // 高度
+				content : '',		 // 内容, 可以是 JQuery 选择器或 HTML 内容, 默认已经使用 form 表单包裹了内容区域, 可以通过 dialog.form 获取此表单对象
+				buttons : [			 // 按钮, type 默认为 'button' 类型
 				    {
 				    	type : 'button',
 				    	clas : 'btn-default', // btn-default, btn-primary, btn-success, btn-info, btn-danger, btn-warning
@@ -122,6 +124,12 @@
 					});
 				}
 			}
+            if (settings.width) {
+                $(_modal_dialog_id + ' .modal-dialog').css('width', settings.width + 'px');
+            }
+            if (settings.height) {
+                $(_modal_dialog_id + ' .modal-dialog').css('height', settings.height + 'px');
+            }
 			return new Dialog(_modal_dialog_id);
 		},
 		// 提示信息, info
@@ -604,9 +612,13 @@ function FileUpload(e, settings) {
 function Editor(e) {
 	// 自身引用
 	this.self = e;
-	// 插入内容
-	this.insert = function (text) {
-		this.self.summernote('insertText', text);
+    // 插入文本内容
+    this.insertText = function (text) {
+        this.self.summernote('insertText', text);
+    };
+    // 插入 HTML 内容
+    this.insertHtml = function (content) {
+        this.self.summernote('code', content);
     };
 	// 聚焦
 	this.focus = function () {
@@ -721,6 +733,14 @@ function Dialog(mdl) {
             selector += '[name="' + name + '"]';
         }
         return this.form.find(selector);
+    };
+    // 查找 Input
+    this.findInput = function (name) {
+        return this.find('input', name);
+    };
+    // 重置表单验证
+    this.resetFormValidator = function () {
+        this.form.bootstrapValidator('resetForm');
     };
 }
 // 控制台错误日志
