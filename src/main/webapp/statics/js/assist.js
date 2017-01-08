@@ -47,7 +47,7 @@
 				title : '未命名标题', // 标题
                 width : null,        // 宽度
                 height : null,       // 高度
-				content : '',		 // 内容, 可以是 JQuery 选择器或 HTML 内容, 默认已经使用 form 表单包裹了内容区域, 可以通过 dialog.form 获取此表单对象
+				content : '',		 // 内容, JQuery 选择器(eg: '#id' 或 '.cls'), 默认已经使用 form 表单包裹了内容区域, 可以通过 dialog.form 获取此表单对象
 				buttons : [			 // 按钮, type 默认为 'button' 类型
 				    {
 				    	type : 'button',
@@ -59,78 +59,76 @@
 				],
 			};
 			var settings = $.extend({}, defaults, options);
-			var dialog_seq = $('.modal').length + 1;
-			var modal_dialog_id = 'modal-dialog-' + dialog_seq;
-			var _modal_dialog_id = '#' + modal_dialog_id;
-			if (!$(_modal_dialog_id).length) {
-				$('body').append('<div class="modal" data-backdrop="static" id="' + modal_dialog_id + '">' + 
-						'<div class="modal-dialog">' + 
-						'<div class="modal-content">' + 
-							'<div class="modal-header">' + 
-								'<button type="button" class="close" data-dismiss="modal" aria-label="Close">' + 
-									'<span aria-hidden="true">&times;</span>' + 
-								'</button>' + 
-								'<h4 class="modal-title"></h4>' + 
-							'</div>' + 
-							'<form role="form" id="' + modal_dialog_id + '-form">' + 
-								'<div class="modal-body"></div>' + 
-								'<div class="modal-footer text-center"></div>' + 
-							'</form>' + 
-						'</div>' + 
-					'</div>' + 
-				'</div>');
-			}
-			$(_modal_dialog_id + ' .modal-title').html(settings.title);
-			if ($(settings.content).length === 1) {
-				$(settings.content).clone(true).css('display', 'block').prependTo(_modal_dialog_id + ' .modal-body');
-				$(settings.content).remove();
-			}
-			else {
-				$(_modal_dialog_id + ' .modal-body').html(settings.content);
-			}
-			for (var i in settings.buttons) {
-				var button = settings.buttons[i];
-				if (!button.type) {
-					button.type = 'button';
-				}
-				if (!button.clas) {
-					button.clas = 'btn btn-default btn-flat';
-				}
-				else {
-					button.clas += 'btn btn-flat';
-				}
-				if (!button.name) {
-					button.name = '按钮';
-				}
-				if (!button.exit) {
-					button.exit = false;
-				}
-				var btnHtml = '<button type="' + button.type + '" class="' + button.clas + '" ';
-				var btnHtmlId = undefined;
-				if (button.exit) {
-					btnHtml += 'data-dismiss="modal"';
-				}
-				else if (button.click) {
-					btnHtmlId = modal_dialog_id + '-btn-' + i;
-					btnHtml += 'id="' + btnHtmlId + '"';
-				}
-				btnHtml += '>' + button.name + '</button>';
-				$(_modal_dialog_id + ' .modal-footer').append(btnHtml);
-				if (button.click && btnHtmlId) {
-					$('#' + btnHtmlId).click(function(e){
-						var this_id = $(this).prop('id');
-						var btn_index = parseInt(this_id.substring(this_id.length - 1));
-						settings.buttons[btn_index].click(e);
-					});
-				}
-			}
-            if (settings.width) {
-                $(_modal_dialog_id + ' .modal-dialog').css('width', settings.width + 'px');
+			var $modal, $modal_title, $modal_form, $modal_body, $modal_footer, $modal_dialog;
+            if ($(settings.content).length === 1) {
+            	$modal_body = $(settings.content);
+                $modal_body.addClass('modal-body');
+                $modal_body.wrapAll('<form role="form"></form>');
+                $modal_body.after('<div class="modal-footer text-center"></div>');
+                $modal_form = $modal_body.parents('form');
+                $modal_form.wrapAll('<div class="modal-content"></div>');
+                $modal_form.before(
+                	'<div class="modal-header">' +
+						'<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+							'<span aria-hidden="true">&times;</span>' +
+						'</button>' +
+						'<h4 class="modal-title"></h4>' +
+                    '</div>'
+				);
+                debugger;
+                var $modal_content = $modal_body.parents('div.modal-content');
+                $modal_content.wrapAll('<div class="modal-dialog"></div>');
+                $modal_dialog = $modal_body.parents('div.modal-dialog');
+                $modal_dialog.wrapAll('<div class="modal" data-backdrop="static"></div>');
+                $modal = $modal_dialog.parents('div.modal');
+                $modal_title = $modal_content.find('.modal-title');
+                $modal_footer = $modal_form.children('div.modal-footer');
+                $modal_title.html(settings.title);
+                for (var i in settings.buttons) {
+                    var button = settings.buttons[i];
+                    if (!button.type) {
+                        button.type = 'button';
+                    }
+                    if (!button.clas) {
+                        button.clas = 'btn btn-default btn-flat';
+                    }
+                    else {
+                        button.clas += 'btn btn-flat';
+                    }
+                    if (!button.name) {
+                        button.name = '按钮';
+                    }
+                    if (!button.exit) {
+                        button.exit = false;
+                    }
+                    var btnHtml = '<button type="' + button.type + '" class="' + button.clas + '" ';
+                    var btnHtmlId = undefined;
+                    if (button.exit) {
+                        btnHtml += 'data-dismiss="modal"';
+                    }
+                    else if (button.click) {
+                        btnHtmlId = 'btn-' + $('button').length + '-' + i;
+                        btnHtml += 'id="' + btnHtmlId + '"';
+                    }
+                    btnHtml += '>' + button.name + '</button>';
+                    $modal_footer.append(btnHtml);
+                    if (button.click && btnHtmlId) {
+                        $('#' + btnHtmlId).click(function(e){
+                            var this_id = $(this).prop('id');
+                            var btn_index = parseInt(this_id.substring(this_id.length - 1));
+                            settings.buttons[btn_index].click(e);
+                        });
+                    }
+                }
+                if (settings.width) {
+                    $modal_dialog.css('width', settings.width + 'px');
+                }
+                if (settings.height) {
+                    $modal_dialog.css('height', settings.height + 'px');
+                }
+                return new Dialog($modal, $modal_title, $modal_form, $modal_body);
             }
-            if (settings.height) {
-                $(_modal_dialog_id + ' .modal-dialog').css('height', settings.height + 'px');
-            }
-			return new Dialog(_modal_dialog_id);
+            return undefined;
 		},
 		// 提示信息, info
 		info : function(message) {
@@ -700,11 +698,15 @@ function DataTable(e) {
 	};
 }
 // 模态框对象
-function Dialog(mdl) {
+function Dialog(modal, modal_title, modal_form, modal_body) {
 	// 自身引用
-	this.self = $(mdl);
-	// form 表单对象
-	this.form = $(mdl + '-form');
+	this.self = modal;
+    // form 表单对象
+    this.form = modal_form;
+    // body
+    this.body = modal_body;
+    // title
+    this.title = modal_title;
 	// 隐藏
 	this.hide = function() {
 		this.self.modal('hide');
@@ -715,14 +717,13 @@ function Dialog(mdl) {
 	};
 	// 设置标题
 	this.setTitle = function (title) {
-		this.self.find('.modal-title').text(title);
+		this.title.text(title);
     };
     // 加载动态内容
     this.load = function (url) {
     	var $this = this;
-        var $modal_body = this.self.find('.modal-body');
 		$.get(url, function (data) {
-            $modal_body.html(data);
+            $this.body.html(data);
             $this.show();
         });
     };

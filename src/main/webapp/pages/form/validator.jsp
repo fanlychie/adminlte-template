@@ -6,7 +6,7 @@
 	<div class="col-md-6">
 		<button type="button" class="btn btn-block btn-default btn-flat" onclick="dialog.show()">打开表单模态框</button>
 	</div>
-	<div id="form" style="display:none">
+	<div id="form">
 		<div class="form-group">
 			<label>账号</label>
 			<input type="text" class="form-control" name="username" placeholder="账号/邮箱/手机">

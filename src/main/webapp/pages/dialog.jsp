@@ -3,7 +3,7 @@
 	<div class="col-md-6">
 		<button type="button" class="btn btn-block btn-default btn-flat" onclick="dialog.show()">模态框</button>
 	</div>
-	<div id="form-div" style="display:none">
+	<div id="form-div">
 		<div class="form-group">
 			<label for>账户</label>
 			<input type="text" name="username" class="form-control" placeholder="输入点什么 ...">
