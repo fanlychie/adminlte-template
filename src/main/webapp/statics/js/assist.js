@@ -48,6 +48,7 @@
                 width : null,        // 宽度
                 height : null,       // 高度
 				content : '',		 // 内容, JQuery 选择器(eg: '#id' 或 '.cls'), 默认已经使用 form 表单包裹了内容区域, 可以通过 dialog.form 获取此表单对象
+                initialize : function() {}, // 初始化
 				buttons : [			 // 按钮, type 默认为 'button' 类型
 				    {
 				    	type : 'button',
@@ -75,11 +76,10 @@
 						'<h4 class="modal-title"></h4>' +
                     '</div>'
 				);
-                debugger;
                 var $modal_content = $modal_body.parents('div.modal-content');
                 $modal_content.wrapAll('<div class="modal-dialog"></div>');
                 $modal_dialog = $modal_body.parents('div.modal-dialog');
-                $modal_dialog.wrapAll('<div class="modal" data-backdrop="static"></div>');
+                $modal_dialog.wrapAll('<div class="modal" data-backdrop="static" data-init="0"></div>');
                 $modal = $modal_dialog.parents('div.modal');
                 $modal_title = $modal_content.find('.modal-title');
                 $modal_footer = $modal_form.children('div.modal-footer');
@@ -126,7 +126,7 @@
                 if (settings.height) {
                     $modal_dialog.css('height', settings.height + 'px');
                 }
-                return new Dialog($modal, $modal_title, $modal_form, $modal_body);
+                return new Dialog($modal, $modal_title, $modal_form, $modal_body, settings.initialize);
             }
             return undefined;
 		},
@@ -698,7 +698,9 @@ function DataTable(e) {
 	};
 }
 // 模态框对象
-function Dialog(modal, modal_title, modal_form, modal_body) {
+function Dialog(modal, modal_title, modal_form, modal_body, initialize) {
+	// 私有属性
+	var fn_initialize = initialize;
 	// 自身引用
 	this.self = modal;
     // form 表单对象
@@ -713,8 +715,12 @@ function Dialog(modal, modal_title, modal_form, modal_body) {
 	};
 	// 显示
 	this.show = function() {
-		this.self.modal('show');
-	};
+        this.self.modal('show');
+        if (this.self.attr('data-init') === '0') {
+            fn_initialize();
+            this.self.attr('data-init', '1');
+        }
+    };
 	// 设置标题
 	this.setTitle = function (title) {
 		this.title.text(title);
