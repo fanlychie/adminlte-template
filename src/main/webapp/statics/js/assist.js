@@ -47,7 +47,7 @@
 				title : '未命名标题', // 标题
                 width : null,        // 宽度
                 height : null,       // 高度
-				content : '',		 // 内容, JQuery 选择器(eg: '#id' 或 '.cls'), 默认已经使用 form 表单包裹了内容区域, 可以通过 dialog.form 获取此表单对象
+				content : '',		 // 内容, JQuery 选择器(eg: '#id' 或 '.cls')或 HTML 内容, 默认已经使用 form 表单包裹了内容区域, 可以通过 dialog.form 获取此表单对象
                 initialize : function() {}, // 初始化
 				buttons : [			 // 按钮, type 默认为 'button' 类型
 				    {
@@ -83,52 +83,82 @@
                 $modal = $modal_dialog.parents('div.modal');
                 $modal_title = $modal_content.find('.modal-title');
                 $modal_footer = $modal_form.children('div.modal-footer');
-                $modal_title.html(settings.title);
-                for (var i in settings.buttons) {
-                    var button = settings.buttons[i];
-                    if (!button.type) {
-                        button.type = 'button';
-                    }
-                    if (!button.clas) {
-                        button.clas = 'btn btn-default btn-flat';
-                    }
-                    else {
-                        button.clas += 'btn btn-flat';
-                    }
-                    if (!button.name) {
-                        button.name = '按钮';
-                    }
-                    if (!button.exit) {
-                        button.exit = false;
-                    }
-                    var btnHtml = '<button type="' + button.type + '" class="' + button.clas + '" ';
-                    var btnHtmlId = undefined;
-                    if (button.exit) {
-                        btnHtml += 'data-dismiss="modal"';
-                    }
-                    else if (button.click) {
-                        btnHtmlId = 'btn-' + $('button').length + '-' + i;
-                        btnHtml += 'id="' + btnHtmlId + '"';
-                    }
-                    btnHtml += '>' + button.name + '</button>';
-                    $modal_footer.append(btnHtml);
-                    if (button.click && btnHtmlId) {
-                        $('#' + btnHtmlId).click(function(e){
-                            var this_id = $(this).prop('id');
-                            var btn_index = parseInt(this_id.substring(this_id.length - 1));
-                            settings.buttons[btn_index].click(e);
-                        });
-                    }
+            } else {
+                var count = 0;
+                var modal_id = 'modal-' + new Date().getTime();
+                while ($('#' + modal_id + '-' + count).length) {
+                	++count;
                 }
-                if (settings.width) {
-                    $modal_dialog.css('width', settings.width + 'px');
+                modal_id += '-' + count;
+                $('body').append(
+                	'<div class="modal" data-backdrop="static" data-init="0" id="' + modal_id + '">' +
+						'<div class="modal-dialog">' +
+							'<div class="modal-content">' +
+								'<div class="modal-header">' +
+									'<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+										'<span aria-hidden="true">&times;</span>' +
+									'</button>' +
+									'<h4 class="modal-title"></h4>' +
+								'</div>' +
+								'<form role="form">' +
+									'<div class="modal-body"></div>' +
+									'<div class="modal-footer text-center"></div>' +
+								'</form>' +
+							'</div>' +
+						'</div>' +
+                    '</div>'
+				);
+                $modal = $('#' + modal_id);
+                $modal_title = $modal.find('.modal-title');
+                $modal_form = $modal.find('form');
+				$modal_body = $modal.find('div.modal-body');
+				$modal_footer = $modal.find('div.modal-footer');
+				$modal_dialog = $modal.find('div.modal-dialog');
+			}
+            $modal_title.html(settings.title);
+            for (var i in settings.buttons) {
+                var button = settings.buttons[i];
+                if (!button.type) {
+                    button.type = 'button';
                 }
-                if (settings.height) {
-                    $modal_dialog.css('height', settings.height + 'px');
+                if (!button.clas) {
+                    button.clas = 'btn btn-default btn-flat';
                 }
-                return new Dialog($modal, $modal_title, $modal_form, $modal_body, settings.initialize);
+                else {
+                    button.clas += ' btn btn-flat';
+                }
+                if (!button.name) {
+                    button.name = '按钮';
+                }
+                if (!button.exit) {
+                    button.exit = false;
+                }
+                var btnHtml = '<button type="' + button.type + '" class="' + button.clas + '" ';
+                var btnHtmlId = undefined;
+                if (button.exit) {
+                    btnHtml += 'data-dismiss="modal"';
+                }
+                else if (button.click) {
+                    btnHtmlId = 'btn-' + $('button').length + '-' + i;
+                    btnHtml += 'id="' + btnHtmlId + '"';
+                }
+                btnHtml += '>' + button.name + '</button>';
+                $modal_footer.append(btnHtml);
+                if (button.click && btnHtmlId) {
+                    $('#' + btnHtmlId).click(function(e){
+                        var this_id = $(this).prop('id');
+                        var btn_index = parseInt(this_id.substring(this_id.length - 1));
+                        settings.buttons[btn_index].click(e);
+                    });
+                }
             }
-            return undefined;
+            if (settings.width) {
+                $modal_dialog.css('width', settings.width + 'px');
+            }
+            if (settings.height) {
+                $modal_dialog.css('height', settings.height + 'px');
+            }
+            return new Dialog($modal, $modal_title, $modal_form, $modal_body, settings.initialize);
 		},
 		// 提示信息, info
 		info : function(message) {
@@ -726,10 +756,17 @@ function Dialog(modal, modal_title, modal_form, modal_body, initialize) {
 		this.title.text(title);
     };
     // 加载动态内容
-    this.load = function (url) {
-    	var $this = this;
-		$.get(url, function (data) {
+    this.load = function (url, data, callback) {
+        if (!data) {
+            data = {};
+        }
+        var $this = this;
+        $.get(url, data, function (data) {
             $this.body.html(data);
+            if (callback) {
+                callback();
+            }
+            $this.self.attr('data-init', '0');
             $this.show();
         });
     };
