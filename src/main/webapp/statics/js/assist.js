@@ -590,9 +590,15 @@ function FileUpload(e, settings) {
                 };
             	o = $.extend({}, this.options, o);
                 this.recreate(o);
+                if ($('.file-drop-zone-title').css('display') === 'block') {
+                    $('.file-drop-zone-title').hide();
+                }
             } else {
                 var o = $.extend({}, this.options, opts);
                 this.recreate(o);
+                if ($('.file-drop-zone-title').css('display') === 'block') {
+                    $('.file-drop-zone-title').hide();
+                }
             }
         }
     };
