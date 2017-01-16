@@ -271,8 +271,8 @@
 			        align : "center",
 			        width : "8%",
 			        formatter : function (value, row, index) {
-			        	return '<span class="fa-span" title="编辑" onclick="optBtnClick(this)" data-edt-selected="false" role="edt"><i class="fa fa-pencil"></i></span>' + 
-			                   '<span class="fa-span" title="删除" onclick="optBtnClick(this)" data-del-selected="false" role="del"><i class="fa fa-trash"></i></span>';
+			        	return '<span class="fa-span" title="编辑" onclick="optBtnClick(this)" data-edt-selected="false" role="edt" style="color:#228B22"><i class="fa fa-pencil"></i> 编辑</span>' +
+			                   '<span class="fa-span" title="删除" onclick="optBtnClick(this)" data-del-selected="false" role="del" style="color:#F08080"><i class="fa fa-trash"></i> 删除</span>';
 			        }
 				});
 			}
