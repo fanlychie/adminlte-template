@@ -180,38 +180,42 @@
 	$.fn.extend({
 		// bootstrapValidator 表单校验
 		validator : function (fields, submitCallback) {
-			var defaults = {
-				message : '无效的值',
-				feedbackIcons : { valid : 'glyphicon glyphicon-ok', invalid : 'glyphicon glyphicon-remove', validating : 'glyphicon glyphicon-refresh' }
-			};
-			var settings = $.extend({}, defaults, {});
-			var field_list = {};
-			if (fields) {
-				for (var field in fields) {
-					field_list[field] = {validators : {notEmpty : {message : fields[field]}}};
-				}
-			}
-			var $this = $(this);
-			$this.bootstrapValidator({
-				message : settings.message,
-				feedbackIcons : settings.feedbackIcons,
-				fields : field_list
-			}).on('success.form.bv', function(e) {
-				e.preventDefault();
-				submitCallback($this);
-			});
-			var $form = $(this);
-			var $modal = $form.parents('div.modal');
-			if ($modal.length) {
-				$modal.on('hide.bs.modal', function() {
-					$form[0].reset();
-					$form.bootstrapValidator('resetForm');
-				});
-				$modal.on('hidden.bs.modal', function() {
-					$form[0].reset();
-					$form.bootstrapValidator('resetForm');
-				});
-			}
+            var defaults = {
+                message : '无效的值',
+                feedbackIcons : { valid : 'glyphicon glyphicon-ok', invalid : 'glyphicon glyphicon-remove', validating : 'glyphicon glyphicon-refresh' }
+            };
+            var settings = $.extend({}, defaults, {});
+            var field_list = {};
+            if (fields) {
+                for (var field in fields) {
+                    field_list[field] = {validators : {notEmpty : {message : fields[field]}}};
+                }
+            }
+            var $this = $(this);
+            $this.bootstrapValidator({
+                message : settings.message,
+                feedbackIcons : settings.feedbackIcons,
+                fields : field_list,
+                submitHandler : function (validator, form, submitButton) {
+                    submitCallback($this);
+                }
+            });
+            var $form = $(this);
+            var $modal = $form.parents('div.modal');
+            if ($modal.length) {
+                $modal.on('hide.bs.modal', function() {
+                    $form[0].reset();
+                    try {
+                        $form.bootstrapValidator('resetForm');
+                    } catch (e) {}
+                });
+                $modal.on('hidden.bs.modal', function() {
+                    $form[0].reset();
+                    try {
+                        $form.bootstrapValidator('resetForm');
+                    } catch (e) {}
+                });
+            }
 		},
 		// bootstrap-table 数据表单
 		datatable : function(options) {
