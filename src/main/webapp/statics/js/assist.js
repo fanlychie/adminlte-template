@@ -65,7 +65,7 @@
             	$modal_body = $(settings.content);
                 $modal_body.addClass('modal-body');
                 $modal_body.wrapAll('<form role="form"></form>');
-                $modal_body.after('<div class="modal-footer text-center"></div>');
+                $modal_body.after('<div class="modal-footer"></div>');
                 $modal_form = $modal_body.parents('form');
                 $modal_form.wrapAll('<div class="modal-content"></div>');
                 $modal_form.before(
@@ -102,7 +102,7 @@
 								'</div>' +
 								'<form role="form">' +
 									'<div class="modal-body"></div>' +
-									'<div class="modal-footer text-center"></div>' +
+									'<div class="modal-footer"></div>' +
 								'</form>' +
 							'</div>' +
 						'</div>' +
@@ -292,6 +292,7 @@
 				paginationPreText : '<i class="fa fa-angle-left"></i>',
 				paginationNextText : '<i class="fa fa-angle-right"></i>',
 				idField : settings.idField,
+                uniqueId : settings.idField,
 				search : settings.search,
 				searchText : settings.searchText,
 				searchOnEnterKey : settings.searchOnEnterKey,
@@ -644,43 +645,40 @@ function FileUpload(e, settings) {
 }
 // 富文本编辑器
 function Editor(e) {
-	// 自身引用
-	this.self = e;
-    // 插入文本内容
-    this.insertText = function (text) {
-        this.self.summernote('insertText', text);
+    // 自身引用
+    this.self = e;
+    // 聚焦
+    this.focus = function () {
+        this.self.summernote('focus');
     };
-    // 插入 HTML 内容
-    this.insertHtml = function (content) {
-        this.self.summernote('code', content);
-    };
-	// 聚焦
-	this.focus = function () {
-		this.self.summernote('focus');
-    };
-	// 判断内容是否为空
-	this.isEmpty = function () {
-		return this.self.summernote('isEmpty');
+    // 判断内容是否为空
+    this.isEmpty = function () {
+        return this.self.summernote('isEmpty');
     }
     // 重置
     this.reset = function () {
-        this.self.summernote('reset');
+        this.self.summernote('code', '');
+        this.focus();
     };
-	// 禁用
-	this.disable = function () {
+    // 禁用
+    this.disable = function () {
         this.self.summernote('disable');
     };
     // 启用
-	this.enable = function () {
+    this.enable = function () {
         this.self.summernote('enable');
     };
-	// 设置字体
-	this.setFontName = function (fontName) {
-		this.self.summernote('fontName', fontName);
+    // 设置字体
+    this.setFontName = function (fontName) {
+        this.self.summernote('fontName', fontName);
     };
-	// 获取编辑器的内容
-	this.val = function () {
-        return this.self.val();
+    // 获取/设置 编辑器的内容
+    this.val = function (content) {
+        if (content) {
+            this.self.summernote('code', content);
+        } else {
+            return this.self.val();
+        }
     };
 }
 // 扩展  Date 支持 format
@@ -732,6 +730,10 @@ function DataTable(e) {
 	this.getSelected = function() {
 		return this.self.bootstrapTable('getSelections')[0];
 	};
+    // 根据ID获取行对象
+    this.getRowById = function (uniqueId) {
+        return this.self.bootstrapTable('getRowByUniqueId', uniqueId);
+    };
 }
 // 模态框对象
 function Dialog(modal, modal_title, modal_form, modal_body, initialize) {
