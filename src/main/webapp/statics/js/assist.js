@@ -612,6 +612,7 @@ function FileUpload(e, settings) {
         if (!opts) {
             opts = this.options;
         }
+        var $this = this.self;
         this.self.fileinput({
             showCaption: opts.showCaption,
             showBrowse: opts.showBrowse,
@@ -639,7 +640,7 @@ function FileUpload(e, settings) {
             cancelIcon: opts.cancelIcon,
             fileActionSettings : opts.fileActionSettings,
         }).on("fileuploaded", function (event, data, previewId, index) {
-            opts.success(data.response, this.self);
+            opts.success(data.response, $this);
         }).on('filesuccessremove', function(event, id) {
             opts.remove(event, id);
         }).on('fileuploaderror', function(event, data, msg) {
