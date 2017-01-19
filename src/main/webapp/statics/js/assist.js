@@ -856,7 +856,8 @@ var date_language_locale = {
 $(function() {
 	// 菜单链接处理, 点击菜单链接使得页面不跳转
 	$('.sidebar-menu a[target!="_blank"]').click(function() {
-		var href = $(this).prop('href');
+		var $this = $(this);
+		var href = $this.prop('href');
 		if (/\/|https?/.test(href)) {
 			$.ajax({url : href, type : 'GET', async : false, dataType : 'html',
 				success : function(page) {
@@ -864,6 +865,7 @@ $(function() {
 				},
 				beforeSend : function() {
 					loading.show();
+                    activeMenu($this);
 				},
 				complete : function() {
 					loading.hide();
@@ -875,6 +877,23 @@ $(function() {
 			return true;
 		}
 	});
+	// 激活菜单
+    var activeMenu = function ($this) {
+        $('.treeview-menu li.active').each(function (i) {
+            var $i = $(this).children('a').children('i');
+            if ($i.hasClass('fa-dot-circle-o')) {
+                $i.removeClass('fa-dot-circle-o').addClass('fa-circle-o');
+            }
+        });
+        $('.treeview-menu li').removeClass('active');
+        $this.parents('li').addClass('active');
+        $('.treeview-menu li.active').each(function (i) {
+            var $i = $(this).children('a').children('i');
+            if ($i.hasClass('fa-circle-o')) {
+                $i.removeClass('fa-circle-o').addClass('fa-dot-circle-o');
+            }
+        });
+    }
 	// Toastr 设置
 	// http://codeseven.github.io/toastr/demo.html
 	toastr.options = {
@@ -894,4 +913,5 @@ $(function() {
 	  "showMethod": "fadeIn",
 	  "hideMethod": "fadeOut"
 	}
+    $('body').append('<style>.skin-blue-light .treeview-menu>li.active>a, .skin-blue-light .treeview-menu>li>a:hover{color:#3CB371}.skin-blue-light .treeview-menu>li.active>a {font-weight:normal;}</style>');
 });
