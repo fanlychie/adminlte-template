@@ -264,20 +264,28 @@
 				toolbarBtn : undefined,				// 自定义增加的的属性, 工具栏按钮
 				searchPlaceholder : '搜索',			// 自定义增加的的属性, 搜索框搜索提示文字
 				showOptionBtns : true,				// 自定义增加的的属性, 显示基础的编辑、删除操作按钮
+                showOptionDelete: true,				// 自定义增加的的属性, 显示删除操作按钮
+                showOptionEdit: true,				// 自定义增加的的属性, 显示编辑操作按钮
 				delCallback : function(row) {},		// 自定义增加的的属性, showOptionBtns=true 时, 删除按钮点击时的回调函数
 				editCallback : function(row) {},	// 自定义增加的的属性, showOptionBtns=true 时, 编辑按钮点击时的回调函数
 			};
 			var settings = $.extend({}, defaults, options);
 			if (settings.showOptionBtns) {
 				settings.columns.push({
-					title : '操作',
-					field : 'state',
-			        align : "center",
-			        width : "8%",
-			        formatter : function (value, row, index) {
-			        	return '<span class="fa-span" title="编辑" onclick="optBtnClick(this)" data-edt-selected="false" role="edt" style="color:#228B22"><i class="fa fa-pencil"></i> 编辑</span>' +
-			                   '<span class="fa-span" title="删除" onclick="optBtnClick(this)" data-del-selected="false" role="del" style="color:#F08080"><i class="fa fa-trash"></i> 删除</span>';
-			        }
+                    title: '操作',
+                    field: 'state',
+                    align: "center",
+                    formatter: function (value, row, index) {
+                        var edt_opt = '<span class="fa-span" title="编辑" onclick="optBtnClick(this)" data-edt-selected="false" role="edt" style="color:#228B22"><i class="fa fa-pencil"></i> 编辑</span>';
+                        var del_opt = '<span class="fa-span" title="删除" onclick="optBtnClick(this)" data-del-selected="false" role="del" style="color:#F08080"><i class="fa fa-trash"></i> 删除</span>';
+                        if (settings.showOptionEdit && !settings.showOptionDelete) {
+                            return edt_opt;
+                        } else if (!settings.showOptionEdit && settings.showOptionDelete) {
+                            return del_opt;
+                        } else if (settings.showOptionEdit && settings.showOptionDelete) {
+                            return edt_opt + del_opt;
+                        }
+                    }
 				});
 			}
 			$(this).bootstrapTable({
